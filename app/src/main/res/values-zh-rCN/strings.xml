@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hud_live">直播中</string>
+    <string name="hud_stopped">停止</string>
+    <string name="hud_latency">延迟</string>
+    <string name="hud_good">好</string>
+    <string name="hud_bad">差</string>
+    <string name="hud_link">链路</string>
+    <string name="hud_connected">已连接</string>
+    <string name="hud_disconnected">断开</string>
+    <string name="hud_tap_toggle">单击开关</string>
+    <string name="hud_double_exit">双击退出</string>
+    <string name="ctl_switch_on">开关 直播中</string>
+    <string name="ctl_switch_off">开关 已停止</string>
+    <string name="ctl_bitrate">码率 %1$s</string>
+    <string name="level_auto">自动</string>
+</resources>

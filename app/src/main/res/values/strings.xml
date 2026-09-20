@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rstream</string>
+
+    <!-- HUD -->
+    <string name="hud_live">LIVE</string>
+    <string name="hud_stopped">STOP</string>
+    <string name="hud_latency">LAT</string>
+    <string name="hud_good">GOOD</string>
+    <string name="hud_bad">BAD</string>
+    <string name="hud_none">-</string>
+    <string name="hud_link">LINK</string>
+    <string name="hud_connected">CONNECTED</string>
+    <string name="hud_disconnected">DOWN</string>
+    <string name="hud_tap_toggle">TAP: TOGGLE</string>
+    <string name="hud_double_exit">2xTAP: EXIT</string>
+
+    <!-- Controls -->
+    <string name="ctl_switch_on">SWITCH LIVE</string>
+    <string name="ctl_switch_off">SWITCH IDLE</string>
+    <string name="ctl_bitrate">BITRATE %1$s</string>
+
+    <!-- Bitrate levels -->
+    <string name="level_auto">AUTO</string>
+    <string name="level_6000">6.0M</string>
+    <string name="level_2500">2.5M</string>
+    <string name="level_800">800k</string>
+    <string name="level_256">256k</string>
+
+    <!-- Notification -->
+    <string name="notif_channel">Rstream streaming</string>
+    <string name="notif_title">Rstream</string>
+</resources>

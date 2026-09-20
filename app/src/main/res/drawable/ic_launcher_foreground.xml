@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rstream 图标前景：眼镜（正视）+ 推流波纹 + 录制红点。
+     设计稿坐标系 512×512，缩到自适应图标安全区（108 画布中间的 72×72）：
+     scale = 72/512 = 0.140625，translate = 18,18 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.140625"
+        android:scaleY="0.140625"
+        android:translateX="18"
+        android:translateY="18">
+        <!-- 左镜片 -->
+        <path
+            android:pathData="M104,196 h82 a34,34 0 0 1 34,34 v28 a34,34 0 0 1 -34,34 h-82 a34,34 0 0 1 -34,-34 v-28 a34,34 0 0 1 34,-34 z"
+            android:strokeColor="#7CF6C0"
+            android:strokeWidth="26"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <!-- 右镜片 -->
+        <path
+            android:pathData="M326,196 h82 a34,34 0 0 1 34,34 v28 a34,34 0 0 1 -34,34 h-82 a34,34 0 0 1 -34,-34 v-28 a34,34 0 0 1 34,-34 z"
+            android:strokeColor="#7CF6C0"
+            android:strokeWidth="26"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <!-- 鼻梁 -->
+        <path
+            android:pathData="M220,244 q36,-34 72,0"
+            android:strokeColor="#7CF6C0"
+            android:strokeWidth="26"
+            android:strokeLineCap="round" />
+        <!-- 左镜腿 -->
+        <path
+            android:pathData="M70,232 l-30,-14"
+            android:strokeColor="#7CF6C0"
+            android:strokeWidth="26"
+            android:strokeLineCap="round" />
+        <!-- 右镜腿 -->
+        <path
+            android:pathData="M442,232 l30,-14"
+            android:strokeColor="#7CF6C0"
+            android:strokeWidth="26"
+            android:strokeLineCap="round" />
+        <!-- 推流波纹 -->
+        <path
+            android:pathData="M330,150 q54,-34 108,0"
+            android:strokeColor="#3AC7FF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M348,106 q40,-26 80,0"
+            android:strokeColor="#3AC7FF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round" />
+        <!-- 录制红点 -->
+        <path
+            android:pathData="M353,320 a22,22 0 1 0 44,0 a22,22 0 1 0 -44,0 z"
+            android:fillColor="#FF4D5E" />
+    </group>
+</vector>

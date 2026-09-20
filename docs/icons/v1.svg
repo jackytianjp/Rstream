@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0B0F12"/>
+  <!-- 眼镜（正视） -->
+  <g fill="none" stroke="#7CF6C0" stroke-width="26" stroke-linecap="round">
+    <rect x="70" y="196" width="150" height="96" rx="34"/>
+    <rect x="292" y="196" width="150" height="96" rx="34"/>
+    <path d="M220 244 q36 -34 72 0"/>
+    <path d="M70 232 l-30 -14"/>
+    <path d="M442 232 l30 -14"/>
+  </g>
+  <!-- 从右镜片射出的推流波纹 -->
+  <g fill="none" stroke="#3AC7FF" stroke-width="20" stroke-linecap="round">
+    <path d="M330 150 q54 -34 108 0"/>
+    <path d="M348 106 q40 -26 80 0"/>
+  </g>
+  <circle cx="375" cy="320" r="22" fill="#FF4D5E"/>
+</svg>

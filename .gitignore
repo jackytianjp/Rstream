@@ -1,0 +1,14 @@
+# Android / Gradle
+build/
+.gradle/
+.kotlin/
+local.properties
+*.iml
+.idea/
+captures/
+
+# secrets — never commit these
+app/src/main/assets/tskey.txt
+app/src/main/jniLibs/arm64-v8a/libtsrelay.so
+*.keystore
+*.jks

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0B0F12"/>
+  <!-- 镜头光圈 -->
+  <g stroke="#7CF6C0" stroke-width="26" fill="none" stroke-linecap="round">
+    <circle cx="256" cy="256" r="150"/>
+    <path d="M256 106 v76"/><path d="M256 330 v76"/>
+    <path d="M106 256 h76"/><path d="M330 256 h76"/>
+  </g>
+  <circle cx="256" cy="256" r="70" fill="#2AA6FF"/>
+  <path d="M232 232 l64 24 -64 24 z" fill="#0B0F12"/>
+  <!-- 波纹 -->
+  <g stroke="#3AC7FF" stroke-width="16" fill="none" stroke-linecap="round" opacity="0.9">
+    <path d="M370 150 q60 60 0 120" transform="translate(0,-8)"/>
+  </g>
+</svg>
