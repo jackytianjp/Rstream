@@ -21,24 +21,19 @@ import androidx.core.content.ContextCompat
  * Rstream HUD 控制页：屏幕上只有最下面两行的符号（状态圆点/方块、延迟天线格、链路环），没有文字。
  *
  * 操作：
- *   触控板单击 = 开始/停止推流；双击 = 退出；长按 = 循环码率档位
+ *   触控板单击 = 操作当前焦点；双指前后滑 = 切换焦点；双击 = 退出
  * adb 驱动：
  *   am start -n com.takano.rstream/.MainActivity --ez start true [--es host 127.0.0.1] [--ei port 8899]
  *            [--ei rot 0|90|180|270] [--ei fps 25] [--es codec h264] [--ei bitrate 2500]
  */
 class MainActivity : Activity() {
 
-    companion object {
-        const val ACTION_SWIPE_FORWARD = "com.android.action.ACTION_TWO_FINGER_SWIPE_FORWARD"
-        const val ACTION_SWIPE_BACK = "com.android.action.ACTION_TWO_FINGER_SWIPE_BACK"
-    }
-
     private lateinit var hud: StatusHudView
     private val handler = Handler(Looper.getMainLooper())
     private val ticker = object : Runnable {
         override fun run() {
             hud.tick()
-            handler.postDelayed(this, 400)
+            handler.postDelayed(this, 150)
         }
     }
 
@@ -75,54 +70,25 @@ class MainActivity : Activity() {
         handler.post(ticker)
     }
 
-    // 触控板双指前后滑 = 有序广播；用它切换 HUD 焦点（开关 ↔ 码率），展开后在档位间移动
-    private val swipeFilter = IntentFilter().apply {
-        addAction(ACTION_SWIPE_FORWARD)
-        addAction(ACTION_SWIPE_BACK)
-        priority = IntentFilter.SYSTEM_HIGH_PRIORITY
-    }
-    private val swipeReceiver = object : BroadcastReceiver() {
-        override fun onReceive(c: Context?, i: Intent?) {
-            when (i?.action) {
-                ACTION_SWIPE_FORWARD -> {
-                    moveFocus(1)
-                    runCatching { abortBroadcast() }
-                }
-                ACTION_SWIPE_BACK -> {
-                    moveFocus(-1)
-                    runCatching { abortBroadcast() }
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        runCatching { registerReceiver(swipeReceiver, swipeFilter) }
-    }
-
-    override fun onPause() {
-        runCatching { unregisterReceiver(swipeReceiver) }
-        super.onPause()
-    }
-
-    private fun moveFocus(dir: Int) {
-        if (StreamStats.hudFocus == 2) {
-            val n = StreamConfig.LEVEL_LABELS.size
-            StreamStats.hudDropIndex = ((StreamStats.hudDropIndex + dir) % n + n) % n
-        } else {
-            StreamStats.hudFocus = if (StreamStats.hudFocus == 0) 1 else 0
-        }
-        hud.invalidate()
-    }
-
-    /** 单击：开关 → 开始/停止；码率 → 展开下拉；下拉展开时 → 选中该档位并回到开关。 */
+    /**
+     * 单击：
+     *   焦点=开关 → 开始/停止推流
+     *   焦点=码率 → 展开 5 档菜单；菜单里再单击 → 选中并回到开关
+     *   焦点=看门狗 → 开关看门狗监控（关掉后 App 被杀也不会被自动拉起）
+     */
     private fun onEnter() {
         when (StreamStats.hudFocus) {
-            0 -> toggle()
-            1 -> {
-                StreamStats.hudFocus = 2
+            HudControl.FOCUS_SWITCH -> toggle()
+            HudControl.FOCUS_BITRATE -> {
+                StreamStats.hudFocus = HudControl.FOCUS_MENU
                 StreamStats.hudDropIndex = StreamStats.bitrateLevelSel
+                hud.invalidate()
+            }
+            HudControl.FOCUS_WATCHDOG -> {
+                startService(
+                    Intent(this, StreamService::class.java)
+                        .setAction(StreamService.ACTION_TOGGLE_WATCHDOG)
+                )
                 hud.invalidate()
             }
             else -> {
@@ -131,7 +97,7 @@ class MainActivity : Activity() {
                         .setAction(StreamService.ACTION_SET_LEVEL)
                         .putExtra("level", StreamStats.hudDropIndex)
                 )
-                StreamStats.hudFocus = 0
+                StreamStats.hudFocus = HudControl.FOCUS_SWITCH
                 hud.invalidate()
             }
         }
@@ -164,6 +130,17 @@ class MainActivity : Activity() {
                 }
                 KeyEvent.KEYCODE_BACK -> {
                     exitApp()
+                    return true
+                }
+                // 兜底：万一触控板滑动是以方向键形式来的
+                KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    HudControl.moveFocus(1)
+                    hud.invalidate()
+                    return true
+                }
+                KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_UP -> {
+                    HudControl.moveFocus(-1)
+                    hud.invalidate()
                     return true
                 }
                 // 长按 = 循环码率档位（自动 / 6.0M / 2.5M / 800k / 256k）

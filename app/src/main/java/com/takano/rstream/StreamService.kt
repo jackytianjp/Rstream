@@ -67,6 +67,8 @@ class StreamService : Service(), LifecycleOwner {
         const val ACTION_CYCLE = "com.takano.rstream.CYCLE"
         /** 指定码率档位（HUD 下拉菜单选中）。 */
         const val ACTION_SET_LEVEL = "com.takano.rstream.SET_LEVEL"
+        /** 切换看门狗监控开关。 */
+        const val ACTION_TOGGLE_WATCHDOG = "com.takano.rstream.TOGGLE_WATCHDOG"
         const val ACTION_STOP = "com.takano.rstream.STOP"
         const val PREFS = "seestream"
     }
@@ -130,6 +132,11 @@ class StreamService : Service(), LifecycleOwner {
             stopSelf()
             return START_NOT_STICKY
         }
+        if (intent?.action == ACTION_TOGGLE_WATCHDOG) {
+            val on = !getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean("watchdog", true)
+            setWatchdog(on)
+            return START_STICKY
+        }
         if (intent?.action == ACTION_SET_LEVEL) {
             setBitrateLevel(intent.getIntExtra("level", 0))
             return START_STICKY
@@ -147,6 +154,8 @@ class StreamService : Service(), LifecycleOwner {
         // 码率档位：0=自动（在家 6.0M / 出门 2.5M），1..4=手动档（长按触控板循环）
         val lvl = resolveLevel(cfg.bitrateLevel)
         cfg = cfg.copy(bitrateKbps = StreamConfig.LEVEL_KBPS[lvl], bitrateLevel = cfg.bitrateLevel)
+        StreamStats.watchdogOn = getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean("watchdog", true)
+        notifyRelayWatchdog(StreamStats.watchdogOn)
         StreamStats.bitrateLevelSel = cfg.bitrateLevel
         StreamStats.bitrateLabel = StreamConfig.LEVEL_LABELS[cfg.bitrateLevel] +
             (if (cfg.bitrateLevel == 0) "(${StreamConfig.LEVEL_LABELS[lvl]})" else "")
@@ -297,6 +306,34 @@ class StreamService : Service(), LifecycleOwner {
         }
     }
 
+    /** 看门狗开关：存设置 + 通知中继（中继按这个决定要不要把被杀掉的 App 拉回来）。 */
+    private fun setWatchdog(enabled: Boolean) {
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean("watchdog", enabled).apply()
+        StreamStats.watchdogOn = enabled
+        notifyRelayWatchdog(enabled)
+        Log.i(TAG, "看门狗 = $enabled")
+    }
+
+    private fun notifyRelayWatchdog(enabled: Boolean) {
+        Thread({ notifyRelayWatchdogBlocking(enabled) }, "wd").start()
+    }
+
+    private fun notifyRelayWatchdogBlocking(enabled: Boolean) {
+        try {
+            val conn = (java.net.URL("http://127.0.0.1:8899/watchdog/" + if (enabled) "on" else "off")
+                .openConnection() as java.net.HttpURLConnection).apply {
+                requestMethod = "POST"
+                connectTimeout = 800
+                readTimeout = 800
+            }
+            conn.outputStream.use { }
+            conn.responseCode
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.w(TAG, "通知中继看门狗状态失败: ${e.message}")
+        }
+    }
+
     /** HUD 下拉菜单选中某个档位：存下来，正在推流就重启生效。 */
     fun setBitrateLevel(level: Int) {
         val l = level.coerceIn(0, StreamConfig.LEVEL_LABELS.size - 1)
@@ -348,6 +385,13 @@ class StreamService : Service(), LifecycleOwner {
 
     /** 通知中继：这是用户主动停止，别自动拉起（13 字节帧头，长度 0 + 标志 2）。 */
     private fun sendBye() {
+        // 网络调用必须离开主线程，否则抛 NetworkOnMainThreadException 被吞掉（踩过一次）
+        val t = Thread({ sendByeBlocking() }, "bye")
+        t.start()
+        runCatching { t.join(900) }
+    }
+
+    private fun sendByeBlocking() {
         try {
             java.net.Socket().use { sk ->
                 sk.connect(java.net.InetSocketAddress("127.0.0.1", 8900), 500)

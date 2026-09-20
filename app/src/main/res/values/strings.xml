@@ -19,6 +19,8 @@
     <string name="ctl_switch_on">SWITCH LIVE</string>
     <string name="ctl_switch_off">SWITCH IDLE</string>
     <string name="ctl_bitrate">BITRATE %1$s</string>
+    <string name="ctl_watchdog_on">WATCHDOG ON</string>
+    <string name="ctl_watchdog_off">WATCHDOG OFF</string>
 
     <!-- Bitrate levels -->
     <string name="level_auto">AUTO</string>

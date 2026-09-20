@@ -18,7 +18,9 @@ object StreamStats {
     @Volatile var lastFrameAt = 0L
     /** HUD 上显示的码率档位（如 自动(6.0M) / 256k）。 */
     @Volatile var bitrateLabel = "自动"
-    /** HUD 焦点：0 = 开关，1 = 码率（未展开），2 = 码率下拉展开。 */
+    /** 看门狗是否启用（HUD 左上角显示）。 */
+    @Volatile var watchdogOn = true
+    /** HUD 焦点：0 = 开关，1 = 码率，2 = 看门狗，3 = 码率菜单展开。 */
     @Volatile var hudFocus = 0
     /** 下拉菜单里高亮到第几档。 */
     @Volatile var hudDropIndex = 0

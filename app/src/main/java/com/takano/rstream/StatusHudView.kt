@@ -237,16 +237,25 @@ class StatusHudView @JvmOverloads constructor(
         val bx = width - pad - boxW
         val by = pad
 
-        // 码率框
-        val bitrateFocused = StreamStats.hudFocus == 1
+        // 码率框（右上）
         drawBox(
             canvas, bx, by, boxW, boxH,
             context.getString(R.string.ctl_bitrate, StreamStats.bitrateLabel),
-            focused = bitrateFocused || StreamStats.hudFocus == 2,
+            focused = StreamStats.hudFocus == HudControl.FOCUS_BITRATE ||
+                StreamStats.hudFocus == HudControl.FOCUS_MENU,
+        )
+
+        // 看门狗框（左上）：关掉后 App 被系统杀掉也不会被自动拉起
+        drawBox(
+            canvas, pad, by, boxW * 0.86f, boxH,
+            context.getString(
+                if (StreamStats.watchdogOn) R.string.ctl_watchdog_on else R.string.ctl_watchdog_off
+            ),
+            focused = StreamStats.hudFocus == HudControl.FOCUS_WATCHDOG,
         )
 
         // 下拉菜单
-        if (StreamStats.hudFocus == 2) {
+        if (StreamStats.hudFocus == HudControl.FOCUS_MENU) {
             val rowH = dp(30f)
             var y = by + boxH + dp(6f)
             StreamConfig.LEVEL_LABELS.forEachIndexed { i, label ->
@@ -275,7 +284,7 @@ class StatusHudView @JvmOverloads constructor(
         drawBox(
             canvas, ax, ay, boxW * 0.72f, boxH,
             context.getString(if (StreamStats.running) R.string.ctl_switch_on else R.string.ctl_switch_off),
-            focused = StreamStats.hudFocus == 0,
+            focused = StreamStats.hudFocus == HudControl.FOCUS_SWITCH,
         )
     }
 

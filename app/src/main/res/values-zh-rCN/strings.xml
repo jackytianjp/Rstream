@@ -13,5 +13,7 @@
     <string name="ctl_switch_on">开关 直播中</string>
     <string name="ctl_switch_off">开关 已停止</string>
     <string name="ctl_bitrate">码率 %1$s</string>
+    <string name="ctl_watchdog_on">看门狗 开</string>
+    <string name="ctl_watchdog_off">看门狗 关</string>
     <string name="level_auto">自动</string>
 </resources>
