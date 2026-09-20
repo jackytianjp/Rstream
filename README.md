@@ -1,5 +1,7 @@
 # Rstream
 
+**English** | [中文](README.zh-CN.md)
+
 Turn **Rokid Glasses** into a self-hosted live camera: the glasses capture, encode and push
 H.264 to *your own* RTMP server over Tailscale — no system VPN, no phone, no vendor cloud.
 
