@@ -16,4 +16,7 @@
     <string name="ctl_watchdog_on">看门狗 开</string>
     <string name="ctl_watchdog_off">看门狗 关</string>
     <string name="level_auto">自动</string>
+    <string name="hud_batt_calc">计算中</string>
+    <string name="hud_batt_min">≈%1$d分</string>
+    <string name="hud_batt_hm">≈%1$d:%2$02d</string>
 </resources>

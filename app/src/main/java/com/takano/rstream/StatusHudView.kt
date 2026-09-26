@@ -12,6 +12,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
+import kotlin.math.roundToInt
 
 /**
  * HUD：屏幕最下面两行「符号 + 文字」，黑底不发光，戴在眼前不挡视线。
@@ -33,7 +34,7 @@ class StatusHudView @JvmOverloads constructor(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         typeface = Typeface.MONOSPACE
-        textSize = dp(13f)
+        textSize = dp(12f)
     }
     private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -56,6 +57,8 @@ class StatusHudView @JvmOverloads constructor(
         battLevel = if (lvl >= 0 && scale > 0) lvl * 100 / scale else -1
         val st = i?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         battCharging = st == BatteryManager.BATTERY_STATUS_CHARGING || st == BatteryManager.BATTERY_STATUS_FULL
+        // 喂给剩余时间预测（同一个 5 秒节拍）
+        BatteryForecast.sample(context, battLevel, battCharging)
     }
 
     /** 电池符号：外壳 + 电量填充（绿/黄/红）+ 充电闪电。返回占用宽度。 */
@@ -107,8 +110,35 @@ class StatusHudView @JvmOverloads constructor(
                 battLevel <= 40 -> warn
                 else -> live
             }
-            canvas.drawText("$battLevel%", x, baselineY(cy, paint), paint)
-            x += dp(34f)
+            val pct = "$battLevel%"
+            canvas.drawText(pct, x, baselineY(cy, paint), paint)
+            x += paint.measureText(pct) + dp(6f)
+
+            // 预测剩余时间：不充电、且已测出放电速率时显示「≈52分」
+            val remain = BatteryForecast.remainingMin
+            val est = when {
+                battCharging -> null
+                remain > 0.0 -> {
+                    val total = remain.roundToInt()
+                    if (total < 60) context.getString(R.string.hud_batt_min, total)
+                    else context.getString(R.string.hud_batt_hm, total / 60, total % 60)
+                }
+                StreamStats.running -> context.getString(R.string.hud_batt_calc)
+                else -> null
+            }
+            if (est != null) {
+                paint.color = when {
+                    remain <= 0.0 -> hint
+                    remain < 8 -> bad
+                    remain < 20 -> warn
+                    else -> live
+                }
+                // 预测值比主字幕小一档，省地方
+                paint.textSize = dp(11f)
+                canvas.drawText(est, x, baselineY(cy, paint), paint)
+                x += paint.measureText(est) + dp(7f)
+                paint.textSize = dp(12f)
+            }
         }
         return x - x0
     }

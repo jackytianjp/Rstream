@@ -15,6 +15,11 @@
     <string name="hud_tap_toggle">TAP: TOGGLE</string>
     <string name="hud_double_exit">2xTAP: EXIT</string>
 
+    <!-- Battery remaining-time forecast -->
+    <string name="hud_batt_calc">CALC…</string>
+    <string name="hud_batt_min">≈%1$dm</string>
+    <string name="hud_batt_hm">≈%1$d:%2$02d</string>
+
     <!-- Controls -->
     <string name="ctl_switch_on">SWITCH LIVE</string>
     <string name="ctl_switch_off">SWITCH IDLE</string>
